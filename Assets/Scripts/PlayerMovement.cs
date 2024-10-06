@@ -2,12 +2,20 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.UIElements;
 
 public class PlayerMovement : MonoBehaviour
 {
+    private float currentHealth;
+    private float maxHealth = 10;
+    private float damage = 2;
+    private float range = 3f;
+
     NavMeshAgent agent;
     RaycastHit hit;
     bool hasDestination = false;
+    bool inRange = false;
+    Transform target = null;
 
     // Start is called before the first frame update
     void Start()
@@ -28,16 +36,18 @@ public class PlayerMovement : MonoBehaviour
                         Move(hit.point);
                         break;
                     case "NPC":
-                        Debug.Log("Attack");
-                        //attack
+                        Attack(hit.transform);
                         break;
                     default: break;
                 }
             }
         }
-        if(!hasDestination)
+        if (!hasDestination)
         {
-            CheckIfArrivedToDestination();
+            if (target == null)
+                CheckIfArrivedToDestination();
+            else
+                CheckIfEnemyInRange();
         }
     }
 
@@ -45,7 +55,6 @@ public class PlayerMovement : MonoBehaviour
     {
         hasDestination = true;
         agent.stoppingDistance = 0;
-        //agent.isStopped = false;
         agent.SetDestination(position);
     }
 
@@ -58,12 +67,35 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
+    private void CheckIfEnemyInRange()
+    {
+        float dist = agent.remainingDistance;
+        if (dist != Mathf.Infinity && agent.remainingDistance <= range && target != null)
+        {
+            inRange = true;
+        }
+    }
+
     private void Attack(Transform target)
     {
-        //provjeri je li u dometu
-        //ako je:
-        ////napadni
-        //ako nije:
-        ////kreni prema lokaciji
+        this.target = target;
+        hasDestination = true;
+        agent.stoppingDistance = 1;
+        agent.SetDestination(target.position);
+        CheckIfEnemyInRange();
+        if (inRange)
+        {
+            float remainingDamage = target.GetComponent<NPCMovement>().TakeDamage(damage);
+            if (remainingDamage <= 0)
+            {
+                Destroy(target.gameObject);
+                hasDestination = false;
+                inRange = false;
+            }
+        }
+        else
+        {
+            Move(target.position);
+        }
     }
 }

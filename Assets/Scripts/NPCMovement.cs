@@ -5,19 +5,31 @@ using UnityEngine.AI;
 
 public class NPCMovement : MonoBehaviour
 {
+    [SerializeField] private GameObject healthBar;
+    private Renderer renderer;
+    [SerializeField] private float currentHealth;
+    private float maxHealth = 10;
+
     NavMeshAgent agent;
     bool hasDestination = false;
+    bool isAttacking = false;
+    bool isAttacked = false;
     float planeSize = 25f;
     private Vector3 position;
 
-    // Start is called before the first frame update
-    void Start()
+    private void Awake()
+    {
+        currentHealth = maxHealth;
+        renderer = healthBar.GetComponent<Renderer>();
+        renderer.material.color = Color.green;
+    }
+
+    private void Start()
     {
         agent = GetComponent<NavMeshAgent>();
     }
 
-    // Update is called once per frame
-    void Update()
+    private void Update()
     {
         if (!hasDestination)
         {
@@ -39,7 +51,6 @@ public class NPCMovement : MonoBehaviour
             float zRandom = Random.Range(-planeSize, planeSize);
 
             position = new Vector3(xRandom, transform.position.y, zRandom);
-            Debug.Log(position.ToString());
             agent.SetDestination(position);
 
             hasPath = agent.CalculatePath(position, agent.path);
@@ -51,7 +62,6 @@ public class NPCMovement : MonoBehaviour
     {
         hasDestination = true;
         agent.stoppingDistance = 0;
-        //agent.isStopped = false;
         agent.SetDestination(position);
     }
 
@@ -64,12 +74,37 @@ public class NPCMovement : MonoBehaviour
         }
     }
 
-    private void Attack(Transform target)
+    private void RunAway(Transform attacker)
     {
-        //provjeri je li u dometu
-        //ako je:
-        ////napadni
-        //ako nije:
-        ////kreni prema lokaciji
+        //run away from attacker
+        Debug.Log("Running away...");
+    }
+
+    public float TakeDamage(float amount)
+    {
+        currentHealth -= amount;
+        if (currentHealth > 0)
+        {
+            float scaleY = healthBar.transform.localScale.y * currentHealth / maxHealth;
+            healthBar.transform.localScale = new Vector3(healthBar.transform.localScale.x, scaleY, healthBar.transform.localScale.z);
+            ChangeBarColor();
+        }
+        return currentHealth;
+    }
+
+    private void ChangeBarColor()
+    {
+        if (currentHealth / maxHealth < 0.33f)
+        {
+            renderer.material.color = Color.red;
+        }
+        else if (currentHealth / maxHealth < 0.66f)
+        {
+            renderer.material.color = Color.yellow;
+        }
+        else
+        {
+            renderer.material.color = Color.green;
+        }
     }
 }
