@@ -2,100 +2,36 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
-using UnityEngine.UIElements;
 
-public class PlayerMovement : MonoBehaviour
+public class PlayerMovement : UnitAction
 {
-    private float currentHealth;
-    private float maxHealth = 10;
-    private float damage = 2;
-    private float range = 3f;
+    bool receivedInput = false;
 
-    NavMeshAgent agent;
-    RaycastHit hit;
-    bool hasDestination = false;
-    bool inRange = false;
-    Transform target = null;
-
-    // Start is called before the first frame update
-    void Start()
+    private void Update()
     {
-        agent = GetComponent<NavMeshAgent>();
-    }
 
-    void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.Mouse1))
+        if (!receivedInput)
         {
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            if (Physics.Raycast(ray, out hit))
+            if (hasDestination)
             {
-                switch (hit.transform.tag)
-                {
-                    case "Ground":
-                        Move(hit.point);
-                        break;
-                    case "NPC":
-                        Attack(hit.transform);
-                        break;
-                    default: break;
-                }
+                if (target == null)
+                    CheckIfArrivedToDestination();
+                else
+                    CheckIfTargetInRange();
             }
-        }
-        if (!hasDestination)
-        {
-            if (target == null)
-                CheckIfArrivedToDestination();
-            else
-                CheckIfEnemyInRange();
+            receivedInput = false;
         }
     }
 
-    private void Move(Vector3 position)
+    public void MoveToLocation(Vector3 location)
     {
-        hasDestination = true;
-        agent.stoppingDistance = 0;
-        agent.SetDestination(position);
+        receivedInput = true;
+        Move(location);
     }
 
-    private void CheckIfArrivedToDestination()
+    public void AttackTarget(Transform enemy)
     {
-        float dist = agent.remainingDistance;
-        if (dist != Mathf.Infinity && agent.pathStatus == NavMeshPathStatus.PathComplete && agent.remainingDistance == 0 && hasDestination)
-        {
-            hasDestination = false;
-        }
-    }
-
-    private void CheckIfEnemyInRange()
-    {
-        float dist = agent.remainingDistance;
-        if (dist != Mathf.Infinity && agent.remainingDistance <= range && target != null)
-        {
-            inRange = true;
-        }
-    }
-
-    private void Attack(Transform target)
-    {
-        this.target = target;
-        hasDestination = true;
-        agent.stoppingDistance = 1;
-        agent.SetDestination(target.position);
-        CheckIfEnemyInRange();
-        if (inRange)
-        {
-            float remainingDamage = target.GetComponent<NPCMovement>().TakeDamage(damage);
-            if (remainingDamage <= 0)
-            {
-                Destroy(target.gameObject);
-                hasDestination = false;
-                inRange = false;
-            }
-        }
-        else
-        {
-            Move(target.position);
-        }
+        receivedInput = true;
+        Attack(enemy);
     }
 }

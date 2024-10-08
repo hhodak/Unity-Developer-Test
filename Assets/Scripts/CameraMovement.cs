@@ -4,9 +4,14 @@ using UnityEngine;
 
 public class CameraMovement : MonoBehaviour
 {
-    [SerializeField] Transform player;
+    Transform player;
     private float xOffset = 5.0f;
     private float zOffset = -5.0f;
+
+    private void Start()
+    {
+        player = GameObject.Find("Player").GetComponent<Transform>();
+    }
 
     void Update()
     {
