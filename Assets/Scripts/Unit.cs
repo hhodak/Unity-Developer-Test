@@ -3,8 +3,17 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 
+public enum UnitType
+{
+    Player,
+    NPC,
+    Guard
+}
+
 public class Unit : MonoBehaviour
 {
+    public UnitType unitType;
+
     protected NavMeshAgent agent;
     protected bool hasDestination = false;
 
@@ -28,12 +37,12 @@ public class Unit : MonoBehaviour
         agent = GetComponent<NavMeshAgent>();
         currentHealth = maxHealth;
         renderer = GetComponent<Renderer>();
-        switch (transform.tag)
+        switch (unitType)
         {
-            case "NPC":
+            case UnitType.NPC:
                 renderer.material.color = Color.cyan;
                 break;
-            case "Guard":
+            case UnitType.Guard:
                 renderer.material.color = Color.blue;
                 break;
             default: break;

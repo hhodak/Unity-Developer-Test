@@ -55,16 +55,16 @@ public class UnitAction : UnitMovement
             ChangeBarColor();
         }
 
-        switch (transform.tag)
+        switch (unitType)
         {
-            case "NPC":
+            case UnitType.NPC:
                 RunAway();
                 break;
-            case "Guard":
+            case UnitType.Guard:
                 Attack(attacker);
                 //alert others
                 break;
-            case "Player":
+            case UnitType.Player:
                 break;
             default: break;
         }
