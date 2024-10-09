@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.AI;
+using UnityEngine.SceneManagement;
 
 public class UnitAction : UnitMovement
 {
@@ -62,7 +62,7 @@ public class UnitAction : UnitMovement
                 break;
             case UnitType.Guard:
                 Attack(attacker);
-                //alert others
+                AlertNearbyGuards();
                 break;
             case UnitType.Player:
                 break;
@@ -100,6 +100,11 @@ public class UnitAction : UnitMovement
             float remainingDamage = target.GetComponent<UnitAction>().TakeDamage(transform, damage);
             if (remainingDamage <= 0)
             {
+                if (unitType == UnitType.Player)
+                {
+                    Debug.Log("YOU DIED!");
+                    SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+                }
                 Destroy(target.gameObject);
                 hasDestination = false;
                 inRange = false;
@@ -122,6 +127,18 @@ public class UnitAction : UnitMovement
         else
         {
             Move(target.position);
+        }
+    }
+
+    private void AlertNearbyGuards()
+    {
+        Collider[] colliders = Physics.OverlapSphere(transform.position, alertRange);
+        foreach (var col in colliders)
+        {
+            if (col.CompareTag("NPC"))
+            {
+                col.transform.GetComponent<NPCMovement>().Attack(attacker);
+            }
         }
     }
 }

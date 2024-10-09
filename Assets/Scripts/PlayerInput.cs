@@ -6,6 +6,7 @@ public class PlayerInput : MonoBehaviour
 {
     RaycastHit hit;
     PlayerMovement playerMovement;
+    [SerializeField] LayerMask mask;
 
     private void Awake()
     {
@@ -17,7 +18,7 @@ public class PlayerInput : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Mouse1))
         {
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            if (Physics.Raycast(ray, out hit))
+            if (Physics.Raycast(ray, out hit, mask))
             {
                 switch (hit.transform.tag)
                 {

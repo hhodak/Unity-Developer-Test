@@ -18,6 +18,7 @@ public class Unit : MonoBehaviour
     protected bool hasDestination = false;
 
     [SerializeField] protected GameObject healthBar;
+    [SerializeField] protected GameObject AlertRangeSprite;
     protected Renderer healthbarRenderer;
     protected Renderer renderer;
     protected float currentHealth;
@@ -28,6 +29,7 @@ public class Unit : MonoBehaviour
     protected bool inRange = false;
     protected Transform target;
     protected Transform attacker;
+    protected float alertRange = 5f;
 
     protected Vector3 position;
     protected float planeSize = 25f;
@@ -44,6 +46,7 @@ public class Unit : MonoBehaviour
                 break;
             case UnitType.Guard:
                 renderer.material.color = Color.blue;
+                AlertRangeSprite.SetActive(true);
                 break;
             default: break;
         }
