@@ -103,14 +103,18 @@ public class UnitAction : UnitMovement
             float remainingDamage = target.GetComponent<UnitAction>().TakeDamage(transform, damage);
             if (remainingDamage <= 0)
             {
-                if (unitType == UnitType.Player)
+                if (unitType == UnitType.Guard)
                 {
                     Debug.Log("YOU DIED!");
                     SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
                 }
-                Destroy(target.gameObject);
-                hasDestination = false;
-                inRange = false;
+                else
+                {
+
+                    Destroy(target.gameObject);
+                    hasDestination = false;
+                    inRange = false;
+                }
             }
         }
         else
