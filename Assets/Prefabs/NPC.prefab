@@ -158,7 +158,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6902951997417187927}
   - component: {fileID: 5983303182160725732}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: AlertRange
   m_TagString: Untagged
   m_Icon: {fileID: 0}

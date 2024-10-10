@@ -23,8 +23,9 @@ public class UnitAction : UnitMovement
         return position;
     }
 
-    protected Vector3 RunAway()
+    protected Vector3 RunAway(Transform attacker)
     {
+        this.attacker = attacker;
         bool hasPath;
 
         position = (transform.position - attacker.position) * 5f;
@@ -58,11 +59,12 @@ public class UnitAction : UnitMovement
         switch (unitType)
         {
             case UnitType.NPC:
-                RunAway();
+                RunAway(attacker);
+                AlertNearbyNPCs();
                 break;
             case UnitType.Guard:
                 Attack(attacker);
-                AlertNearbyGuards();
+                AlertNearbyNPCs();
                 break;
             case UnitType.Player:
                 break;
@@ -95,8 +97,9 @@ public class UnitAction : UnitMovement
         agent.stoppingDistance = 1;
         agent.SetDestination(target.position);
         CheckIfTargetInRange();
-        if (inRange)
+        if (inRange && attackCooldown <= 0)
         {
+            attackCooldown = attackSpeed;
             float remainingDamage = target.GetComponent<UnitAction>().TakeDamage(transform, damage);
             if (remainingDamage <= 0)
             {
@@ -130,14 +133,21 @@ public class UnitAction : UnitMovement
         }
     }
 
-    private void AlertNearbyGuards()
+    private void AlertNearbyNPCs()
     {
         Collider[] colliders = Physics.OverlapSphere(transform.position, alertRange);
         foreach (var col in colliders)
         {
             if (col.CompareTag("NPC"))
             {
-                col.transform.GetComponent<NPCMovement>().Attack(attacker);
+                if (col.transform.GetComponent<NPCMovement>().unitType == UnitType.Guard)
+                {
+                    col.transform.GetComponent<NPCMovement>().Attack(attacker);
+                }
+                else
+                {
+                    col.transform.GetComponent<NPCMovement>().RunAway(attacker);
+                }
             }
         }
     }

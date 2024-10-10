@@ -9,7 +9,7 @@ public class PlayerMovement : UnitAction
 
     private void Update()
     {
-
+        attackCooldown-=Time.deltaTime;
         if (!receivedInput)
         {
             if (hasDestination)

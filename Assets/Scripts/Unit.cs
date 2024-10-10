@@ -30,6 +30,8 @@ public class Unit : MonoBehaviour
     protected Transform target;
     protected Transform attacker;
     protected float alertRange = 5f;
+    protected float attackSpeed = 2f;
+    [SerializeField] protected float attackCooldown;
 
     protected Vector3 position;
     protected float planeSize = 25f;
@@ -52,5 +54,6 @@ public class Unit : MonoBehaviour
         }
         healthbarRenderer = healthBar.GetComponent<Renderer>();
         healthbarRenderer.material.color = Color.green;
+        attackCooldown = attackSpeed;
     }
 }

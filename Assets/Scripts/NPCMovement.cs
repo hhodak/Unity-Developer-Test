@@ -7,6 +7,7 @@ public class NPCMovement : UnitAction
 {
     private void Update()
     {
+        attackCooldown -= Time.deltaTime;
         if (!hasDestination)
         {
             FindNewLocation();
